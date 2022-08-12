@@ -32,7 +32,7 @@ Stop the application:
 make stop
 ```
 
-Example of how to upload a file.
+Example of how to upload a file:
 
 (replace FILE with the file to sent/upload.)
 
@@ -40,7 +40,7 @@ Example of how to upload a file.
 make test-file file=FILE
 ```
 
-Example of how to download a file.
+Example of how to download a file:
 
 (replace URL with url file to download.)
 
