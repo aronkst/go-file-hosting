@@ -1,15 +1,14 @@
-build:
-	docker build -t go-file-hosting .
-	docker container create --name go-file-hosting -e PORT=3000 -p 3000:3000 go-file-hosting
-
 run:
-	docker start -a go-file-hosting
+	docker compose up
 
 start:
-	docker start go-file-hosting
+	docker compose up -d
 
 stop:
-	docker container stop go-file-hosting
+	docker compose stop
+
+logs:
+	docker compose logs -f
 
 test-file:
 	curl --request POST --url 'http://localhost:3000/file' --header 'Content-Type: multipart/form-data' --form file=@$(file)

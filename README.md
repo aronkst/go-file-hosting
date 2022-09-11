@@ -8,12 +8,6 @@ To know more details, there is the Makefile file with the commands necessary for
 
 # How to use
 
-Builds the Docker application, must be the first command to be executed:
-
-```
-make build
-```
-
 Run the application:
 
 ```

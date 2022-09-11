@@ -1,8 +1,0 @@
-.git
-.vscode
-.env
-dockerfile
-docker-compose.yml
-LICENSE
-Makefile
-README.md
