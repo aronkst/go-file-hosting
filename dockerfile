@@ -1,4 +1,4 @@
-FROM golang:1.18-alpine
+FROM golang:1.18-alpine AS build
 
 WORKDIR /usr/src/app
 
@@ -14,8 +14,14 @@ COPY data/*.go data
 COPY web/*.go web
 COPY main.go .
 
+RUN go build -o go-file-hosting main.go
+
+FROM alpine:3.16
+
+WORKDIR /usr/src/app
+
 RUN mkdir static
 
-RUN go build -o go-file-hosting main.go
+COPY --from=build /usr/src/app/go-file-hosting go-file-hosting
 
 CMD [ "./go-file-hosting" ]
