@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -14,10 +13,11 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func HandlerURL(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	body, err := getBody(r)
+func HandlerURL(writer http.ResponseWriter, request *http.Request, _ httprouter.Params) {
+	body, err := getBody(request)
 	if err != nil {
-		httpError(w, err)
+		httpError(writer, err)
+
 		return
 	}
 
@@ -25,86 +25,113 @@ func HandlerURL(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	file, err := os.Create("static/" + fileName)
 	if err != nil {
-		httpError(w, err)
+		httpError(writer, err)
+
 		return
 	}
 	defer file.Close()
 
-	downloadFile, err := http.Get(body.Url)
+	downloadFile, err := http.Get(body.URL)
 	if err != nil {
-		httpError(w, err)
+		httpError(writer, err)
+
 		return
 	}
 	defer downloadFile.Body.Close()
 
 	_, err = io.Copy(file, downloadFile.Body)
 	if err != nil {
-		httpError(w, err)
+		httpError(writer, err)
+
 		return
 	}
 
-	output := data.Output{Url: "/" + fileName}
+	output := data.Output{URL: "/" + fileName}
 	outputBody, err := json.Marshal(output)
+
 	if err != nil {
-		httpError(w, err)
+		httpError(writer, err)
+
 		return
 	}
 
-	w.Write(outputBody)
+	_, err = writer.Write(outputBody)
+	if err != nil {
+		httpError(writer, err)
+
+		return
+	}
 }
 
-func HandlerFile(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	r.ParseMultipartForm(10 << 20)
-
-	uploadFile, info, err := r.FormFile("file")
+func HandlerFile(writer http.ResponseWriter, request *http.Request, _ httprouter.Params) {
+	err := request.ParseMultipartForm(10 << 20)
 	if err != nil {
-		httpError(w, err)
+		httpError(writer, err)
+
+		return
+	}
+
+	uploadFile, info, err := request.FormFile("file")
+	if err != nil {
+		httpError(writer, err)
+
 		return
 	}
 	defer uploadFile.Close()
 
 	fileName := info.Filename
 	if fileName == "" {
-		httpError(w, err)
+		httpError(writer, err)
+
 		return
 	}
 
 	file, err := os.Create("static/" + fileName)
 	if err != nil {
-		httpError(w, err)
+		httpError(writer, err)
+
 		return
 	}
 	defer file.Close()
 
 	_, err = io.Copy(file, uploadFile)
 	if err != nil {
-		httpError(w, err)
+		httpError(writer, err)
+
 		return
 	}
 
-	output := data.Output{Url: "/" + fileName}
+	output := data.Output{URL: "/" + fileName}
 	outputBody, err := json.Marshal(output)
+
 	if err != nil {
-		httpError(w, err)
+		httpError(writer, err)
+
 		return
 	}
 
-	w.Write(outputBody)
+	_, err = writer.Write(outputBody)
+	if err != nil {
+		httpError(writer, err)
+
+		return
+	}
 }
 
-func getBody(r *http.Request) (data.Body, error) {
-	requestBody, err := ioutil.ReadAll(r.Body)
+func getBody(request *http.Request) (data.Body, error) {
+	requestBody, err := io.ReadAll(request.Body)
 	if err != nil {
 		return data.Body{}, err
 	}
 
 	body := data.Body{}
 	err = json.Unmarshal(requestBody, &body)
+
 	if err != nil {
 		return data.Body{}, err
 	}
 
-	if body.Url == "" {
+	if body.URL == "" {
 		return data.Body{}, errors.New("invalid url")
 	}
 
@@ -113,7 +140,7 @@ func getBody(r *http.Request) (data.Body, error) {
 	}
 
 	if body.Extension == "" {
-		body.Extension = getExtension(body.Url)
+		body.Extension = getExtension(body.URL)
 	}
 
 	return body, nil
@@ -124,6 +151,7 @@ func generateName() string {
 	value := uuid.String()
 
 	value = strings.ReplaceAll(value, "-", "")
+
 	return value
 }
 

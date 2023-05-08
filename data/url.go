@@ -1,5 +1,5 @@
 package data
 
 type Output struct {
-	Url string `json:"url"`
+	URL string `json:"url"`
 }
