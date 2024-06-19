@@ -1,10 +1,10 @@
 # Go File Hosting
 
-This is a simple microservice to download or upload files and make them available via a webserver. This project was developed with Go and its execution can be done easily using Docker.
+This open source project is a straightforward microservice designed for file download or upload operations, accessible via a web server. Built using Go, it facilitates deployment through Docker for seamless execution.
 
-Its operation is as follows, perform a POST request in one of the two available routes with the necessary data, such as the URL of the file to be downloaded or the file to be sent/upload to the server, then this file is be available in a mini file hosting within the application, and these files can be accessed via a URL.
+The microservice functions through two primary routes accessed via POST requests. Users can either specify a file URL for downloading or directly upload a file to the server. Once processed, the files become accessible within a built-in mini file hosting environment within the application, accessible via unique URLs.
 
-To know more details, there is the Makefile file with the commands necessary for its execution and example of how to use, including `curl` commands.
+For more comprehensive understanding and setup, the project includes a Makefile with essential commands for execution. Additionally, it provides examples demonstrating usage scenarios, including practical `curl` commands for quick integration and testing.
 
 # How to use
 
